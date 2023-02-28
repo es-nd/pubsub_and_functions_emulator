@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  function:
+    build:
+      context: .
+      dockerfile: docker/function/Dockerfile
+    volumes:
+      - ./src:/function
+    environment:
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+    ports:
+      - 8080:8080
+    tty: true
+    command: functions-framework --target=main --signature-type=event --debug
+  pubsub:
+    build:
+      context: .
+      dockerfile: docker/pubsub/Dockerfile
+    volumes:
+      - ./scripts:/python-pubsub/samples/snippets/scripts
+      - ./test:/python-pubsub/samples/snippets/test
+    ports:
+      - 8085:8085
+    env_file: .env
+    tty: true
+    command: ./scripts/entrypoint.sh
